@@ -6,7 +6,7 @@
 class StrafeHelper {
 public:
 	static void setAccelerationValues(vec_t const in_forward[],
-	    vec_t const in_velocity[], vec_t const in_wishdir[],
+		vec_t const in_velocity[], vec_t const in_wishdir[],
 		double wishspeed, double accel, double frametime);
 
 	static void setScale(float new_scale);

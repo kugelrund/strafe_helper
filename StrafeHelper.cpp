@@ -26,7 +26,8 @@ template <typename T, std::size_t N>
 typename T dotProduct(std::array<T, N> const &v, std::array<T, N> const &w)
 {
 	double dot_product = 0.0;
-	for (std::size_t i = 0; i < N; i += 1) {
+	for (std::size_t i = 0; i < N; i += 1)
+	{
 		dot_product += v[i] * w[i];
 	}
 	return dot_product;
@@ -47,7 +48,7 @@ float StrafeHelper::scale;
 
 void StrafeHelper::setAccelerationValues(vec_t const in_forward[],
 		vec_t const in_velocity[], vec_t const in_wishdir[],
-        double const wishspeed, double const accel, double const frametime)
+		double const wishspeed, double const accel, double const frametime)
 {
 	std::array<double, 2> forward = { in_forward[0], in_forward[1] };
 	std::array<double, 2> velocity = { in_velocity[0], in_velocity[1] };
@@ -79,7 +80,7 @@ void StrafeHelper::setAccelerationValues(vec_t const in_forward[],
 	maximumAngle = std::acos(maximumAngle);
 	maximumAngle = angle_sign * maximumAngle - forward_velocity_angle;
 
-    currentAngle = dotProduct(velocity, forward) / velocity_norm;
+	currentAngle = dotProduct(velocity, forward) / velocity_norm;
 	currentAngle = std::acos(currentAngle);
 	currentAngle = vectorAngleSign(forward, velocity) * currentAngle;
 }
@@ -118,13 +119,13 @@ void StrafeHelper::draw(bool const center, bool const center_marker,
 	{
 		CG_FillRect(angleToPixel(minimumAngle + offset), upper_y,
 		            angleDiffToPixelDiff(maximumAngle - minimumAngle), height,
-                    accelerating_color);
+		            accelerating_color);
 	}
 	else
 	{
 		CG_FillRect(angleToPixel(maximumAngle + offset), upper_y,
 		            angleDiffToPixelDiff(minimumAngle - maximumAngle), height,
-                    accelerating_color);
+		            accelerating_color);
 	}
 
 	constexpr vec4_t optimal_color = { 0.0f, 1.0f, 0.25f, 0.75f };
@@ -136,6 +137,6 @@ void StrafeHelper::draw(bool const center, bool const center_marker,
 		constexpr vec4_t center_marker_color = { 1.0f, 1.0f,  1.0f, 0.75f };
 		CG_FillRect(angleToPixel(currentAngle + offset) - 0.5f,
 		            upper_y + height / 2.0f,
-					2.0f, height / 2.0f, center_marker_color);
+		            2.0f, height / 2.0f, center_marker_color);
 	}
 }
