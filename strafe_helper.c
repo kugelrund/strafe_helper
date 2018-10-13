@@ -88,7 +88,7 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 static float angleDiffToPixelDiff(const float angle_difference, const float scale,
                                   const float hud_width)
 {
-	return angle_difference * (hud_width / 2.0f) * scale / M_PI;
+	return angle_difference * (hud_width / 2.0f) * scale / (float)M_PI;
 }
 
 static float angleToPixel(const float angle, const float scale,
