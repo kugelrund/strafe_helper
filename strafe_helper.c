@@ -98,7 +98,7 @@ static float angleToPixel(const float angle, const float scale,
 	       angleDiffToPixelDiff(angle, scale, hud_width);
 }
 
-void StrafeHelper_Draw(struct StrafeHelperParams *params,
+void StrafeHelper_Draw(const struct StrafeHelperParams *params,
                        const float hud_width, const float hud_height)
 {
 	const float upper_y = (hud_height - params->height) / 2.0f + params->y;
