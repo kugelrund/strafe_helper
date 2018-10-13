@@ -11,19 +11,19 @@ extern "C" {
 struct StrafeHelperParams {
     bool center;
     bool center_marker;
-    float scale;
-    float height;
-    float y;
+    double scale;
+    double height;
+    double y;
 };
 
 void StrafeHelper_SetAccelerationValues(const float forward[3],
                                         const float velocity[3],
                                         const float wishdir[3],
-                                        const float wishspeed,
-                                        const float accel,
-                                        const float frametime);
+                                        const double wishspeed,
+                                        const double accel,
+                                        const double frametime);
 void StrafeHelper_Draw(const struct StrafeHelperParams *params,
-                       const float hud_width, const float hud_height);
+                       const double hud_width, const double hud_height);
 
 #ifdef __cplusplus
 } // extern "C"

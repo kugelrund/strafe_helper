@@ -4,79 +4,82 @@
 #include <stdbool.h>
 
 
-static float sign(const float value)
+static double sign(const double value)
 {
-	return copysignf(1.0f, value);
+	return copysign(1.0, value);
 }
 
-static float vectorAngleSign(const float v[2], const float w[2])
+static double vectorAngleSign(const double v[2], const double w[2])
 {
 	return sign(v[0] * w[1] - v[1] * w[0]);
 }
 
-static float dotProduct(const float v[2], const float w[2])
+static double dotProduct(const double v[2], const double w[2])
 {
-	float dot_product = 0.0f;
+	double dot_product = 0.0;
 	for (int i = 0; i < 2; i += 1) {
 		dot_product += v[i] * w[i];
 	}
 	return dot_product;
 }
 
-static float vectorNorm(const float v[2])
+static double vectorNorm(const double v[2])
 {
-	return sqrtf(dotProduct(v, v));
+	return sqrt(dotProduct(v, v));
 }
 
 
 /* The current angle between the players velocity vector and forward-looking
  * vector. */
-static float angle_current;
+static double angle_current;
 /* The angle between the players velocity vector and forward-looking vector
  * that would have resulted in the maximum amount of acceleration for the
  * last reported acceleration values. */
-static float angle_optimal;
+static double angle_optimal;
 /* The (absolute) minimum and maximum angles between the players velocity
  * vector and forward-looking vector that would give some acceleration. */
-static float angle_minimum;
-static float angle_maximum;
+static double angle_minimum;
+static double angle_maximum;
 
-void StrafeHelper_SetAccelerationValues(const float forward[3],
-                                        const float velocity[3],
-                                        const float wishdir[3],
-                                        const float wishspeed,
-                                        const float accel,
-                                        const float frametime)
+void StrafeHelper_SetAccelerationValues(const float in_forward[3],
+                                        const float in_velocity[3],
+                                        const float in_wishdir[3],
+                                        const double wishspeed,
+                                        const double accel,
+                                        const double frametime)
 {
-	const float v_z = velocity[2];
-	const float w_z = wishdir[2];
+	const double forward[2] = { in_forward[0], in_forward[1] };
+	const double velocity[2] = { in_velocity[0], in_velocity[1] };
+	const double wishdir[2] = { in_wishdir[0], in_wishdir[1] };
+	const double v_z = in_velocity[2];
+	const double w_z = in_wishdir[2];
 
-	const float forward_norm = vectorNorm(forward);
-	const float velocity_norm = vectorNorm(velocity);
-	const float wishdir_norm = vectorNorm(wishdir);
+	const double forward_norm = vectorNorm(forward);
+	const double velocity_norm = vectorNorm(velocity);
+	const double wishdir_norm = vectorNorm(wishdir);
 
-	const float forward_velocity_angle = acosf(dotProduct(forward, wishdir)
+	const double forward_velocity_angle = acos(dotProduct(forward, wishdir)
 		/ (forward_norm * wishdir_norm)) * vectorAngleSign(wishdir, forward);
 
-	const float angle_sign = vectorAngleSign(wishdir, velocity);
+	const double angle_sign = vectorAngleSign(wishdir, velocity);
 
-	angle_optimal = (wishspeed * (1.0f - accel * frametime) - v_z * w_z)
+	angle_optimal = (wishspeed * (1.0 - accel * frametime) - v_z * w_z)
 	                / (velocity_norm * wishdir_norm);
-	angle_optimal = acosf(angle_optimal);
+	angle_optimal = acos(angle_optimal);
 	angle_optimal = angle_sign * angle_optimal - forward_velocity_angle;
 
-	angle_minimum = (wishspeed - v_z * w_z) / (2.0f - wishdir_norm * wishdir_norm)
+	angle_minimum = (wishspeed - v_z * w_z) / (2.0 - wishdir_norm * wishdir_norm)
 	                * wishdir_norm / velocity_norm;
-	angle_minimum = acosf(fminf(1.0f, angle_minimum));
+	angle_minimum = acos(fmin(1.0, angle_minimum));
 	angle_minimum = angle_sign * angle_minimum - forward_velocity_angle;
 
-	angle_maximum = -0.5f * accel * frametime * wishspeed * wishdir_norm
+	angle_maximum = -0.5 * accel * frametime * wishspeed * wishdir_norm
 	                / velocity_norm;
-	angle_maximum = acosf(angle_maximum);
+	angle_maximum = acos(angle_maximum);
 	angle_maximum = angle_sign * angle_maximum - forward_velocity_angle;
 
 	angle_current = dotProduct(velocity, forward) / (velocity_norm * forward_norm);
-	angle_current = acosf(angle_current);
+	angle_current = acos(angle_current);
 	angle_current = vectorAngleSign(forward, velocity) * angle_current;
 }
 
@@ -85,31 +88,32 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 #define M_PI 3.14159265358979323846
 #endif
 
-static float angleDiffToPixelDiff(const float angle_difference, const float scale,
-                                  const float hud_width)
+static double angleDiffToPixelDiff(const double angle_difference,
+                                   const double scale,
+                                   const double hud_width)
 {
-	return angle_difference * (hud_width / 2.0f) * scale / (float)M_PI;
+	return angle_difference * (hud_width / 2.0) * scale / M_PI;
 }
 
-static float angleToPixel(const float angle, const float scale,
-                          const float hud_width)
+static double angleToPixel(const double angle, const double scale,
+                           const double hud_width)
 {
-	return (hud_width / 2.0f) - 0.5f +
+	return (hud_width / 2.0) - 0.5 +
 	       angleDiffToPixelDiff(angle, scale, hud_width);
 }
 
 void StrafeHelper_Draw(const struct StrafeHelperParams *params,
-                       const float hud_width, const float hud_height)
+                       const double hud_width, const double hud_height)
 {
-	const float upper_y = (hud_height - params->height) / 2.0f + params->y;
+	const double upper_y = (hud_height - params->height) / 2.0 + params->y;
 
-	float offset = 0.0f;
+	double offset = 0.0;
 	if (params->center)	{
 		offset = -angle_current;
 	}
 
-	float angle_x;
-	float angle_width;
+	double angle_x;
+	double angle_width;
 	if (angle_minimum < angle_maximum) {
 		angle_x = angle_minimum + offset;
 		angle_width = angle_maximum - angle_minimum;
@@ -123,12 +127,12 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 		angleDiffToPixelDiff(angle_width, params->scale, hud_width),
 		params->height, shi_color_accelerating);
 	shi_drawFilledRectangle(
-		angleToPixel(angle_optimal + offset, params->scale, hud_width) - 0.5f,
-		upper_y, 2.0f, params->height, shi_color_optimal);
+		angleToPixel(angle_optimal + offset, params->scale, hud_width) - 0.5,
+		upper_y, 2.0, params->height, shi_color_optimal);
 	if (params->center_marker) {
 		shi_drawFilledRectangle(
-			angleToPixel(angle_current + offset, params->scale, hud_width) - 0.5f,
-			upper_y + params->height / 2.0f, 2.0f, params->height / 2.0f,
+			angleToPixel(angle_current + offset, params->scale, hud_width) - 0.5,
+			upper_y + params->height / 2.0, 2.0, params->height / 2.0,
 			shi_color_center_marker);
 	}
 }
