@@ -6,7 +6,7 @@
 
 static float sign(const float value)
 {
-    return copysignf(1.0f, value);
+	return copysignf(1.0f, value);
 }
 
 static float vectorAngleSign(const float v[2], const float w[2])
@@ -44,8 +44,8 @@ static float angle_maximum;
 void StrafeHelper_SetAccelerationValues(const float forward[3],
                                         const float velocity[3],
                                         const float wishdir[3],
-		                                const float wishspeed,
-										const float accel,
+                                        const float wishspeed,
+                                        const float accel,
                                         const float frametime)
 {
 	const float v_z = velocity[2];
@@ -86,20 +86,20 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 #endif
 
 static float angleDiffToPixelDiff(const float angle_difference, const float scale,
-						   		  const float hud_width)
+                                  const float hud_width)
 {
 	return angle_difference * (hud_width / 2.0f) * scale / M_PI;
 }
 
 static float angleToPixel(const float angle, const float scale,
-						  const float hud_width)
+                          const float hud_width)
 {
 	return (hud_width / 2.0f) - 0.5f +
-		   angleDiffToPixelDiff(angle, scale, hud_width);
+	       angleDiffToPixelDiff(angle, scale, hud_width);
 }
 
 void StrafeHelper_Draw(struct StrafeHelperParams *params,
-					   const float hud_width, const float hud_height)
+                       const float hud_width, const float hud_height)
 {
 	const float upper_y = (hud_height - params->height) / 2.0f + params->y;
 
@@ -128,7 +128,7 @@ void StrafeHelper_Draw(struct StrafeHelperParams *params,
 	if (params->center_marker) {
 		shi_drawFilledRectangle(
 			angleToPixel(angle_current + offset, params->scale, hud_width) - 0.5f,
-		    upper_y + params->height / 2.0f, 2.0f, params->height / 2.0f,
+			upper_y + params->height / 2.0f, 2.0f, params->height / 2.0f,
 			shi_color_center_marker);
 	}
 }

@@ -19,7 +19,7 @@ struct StrafeHelperParams {
 void StrafeHelper_SetAccelerationValues(const float forward[3],
                                         const float velocity[3],
                                         const float wishdir[3],
-		                                float wishspeed, float accel,
+                                        float wishspeed, float accel,
                                         float frametime);
 void StrafeHelper_Draw(struct StrafeHelperParams *params,
                        float hud_width, float hud_height);
