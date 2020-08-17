@@ -3,6 +3,10 @@
 #include <math.h>
 #include <stdbool.h>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 
 static float sign(const float value)
 {
@@ -78,12 +82,17 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	angle_current = dotProduct(velocity, forward) / (velocity_norm * forward_norm);
 	angle_current = acosf(angle_current);
 	angle_current = vectorAngleSign(forward, velocity) * angle_current;
+
+	/* Make sure that angle_current fits well to the other angles. That is, try
+	 * equivalent angles by adding or subtracting multiples of 2 * M_PI such
+	 * that the angle values are closest to each other. That way we avoid
+	 * differences greater than 2 * M_PI between the angles, which would break
+	 * the drawing code. */
+	const float two_pi = 2.0f * (float)M_PI;
+	angle_current += truncf((angle_minimum - angle_current) / two_pi) * two_pi;
+	angle_current += truncf((angle_maximum - angle_current) / two_pi) * two_pi;
 }
 
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 static float angleDiffToPixelDiff(const float angle_difference, const float scale,
                                   const float hud_width)
