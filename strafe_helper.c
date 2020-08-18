@@ -21,7 +21,8 @@ static float vectorAngleSign(const float v[2], const float w[2])
 static float dotProduct(const float v[2], const float w[2])
 {
 	float dot_product = 0.0f;
-	for (int i = 0; i < 2; i += 1) {
+	int i;
+	for (i = 0; i < 2; i += 1) {
 		dot_product += v[i] * w[i];
 	}
 	return dot_product;
@@ -63,6 +64,7 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 		/ (forward_norm * wishdir_norm)) * vectorAngleSign(wishdir, forward);
 
 	const float angle_sign = vectorAngleSign(wishdir, velocity);
+	const float two_pi = 2.0f * (float)M_PI;
 
 	angle_optimal = (wishspeed * (1.0f - accel * frametime) - v_z * w_z)
 	                / (velocity_norm * wishdir_norm);
@@ -88,7 +90,6 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	 * that the angle values are closest to each other. That way we avoid
 	 * differences greater than 2 * M_PI between the angles, which would break
 	 * the drawing code. */
-	const float two_pi = 2.0f * (float)M_PI;
 	angle_current += truncf((angle_minimum - angle_current) / two_pi) * two_pi;
 	angle_current += truncf((angle_maximum - angle_current) / two_pi) * two_pi;
 }
@@ -110,6 +111,9 @@ static float angleToPixel(const float angle, const float scale,
 void StrafeHelper_Draw(const struct StrafeHelperParams *params,
                        const float hud_width, const float hud_height)
 {
+	float angle_x;
+	float angle_width;
+
 	const float upper_y = (hud_height - params->height) / 2.0f + params->y;
 
 	float offset = 0.0f;
@@ -117,8 +121,6 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 		offset = -angle_current;
 	}
 
-	float angle_x;
-	float angle_width;
 	if (angle_minimum < angle_maximum) {
 		angle_x = angle_minimum + offset;
 		angle_width = angle_maximum - angle_minimum;
