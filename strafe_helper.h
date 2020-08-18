@@ -23,7 +23,7 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
                        const float hud_width, const float hud_height);
 
 #ifdef __cplusplus
-} // extern "C"
+} /* extern "C" */
 #endif
 
-#endif // STRAFE_HELPER_H
+#endif /* STRAFE_HELPER_H */
