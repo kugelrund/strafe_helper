@@ -52,6 +52,11 @@ static float angle_optimal;
 static float angle_minimum;
 static float angle_maximum;
 
+#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+/* The current player speed in the horizontal plane */
+static float speed;
+#endif
+
 void StrafeHelper_SetAccelerationValues(const float forward[3],
                                         const float velocity[3],
                                         const float wishdir[3],
@@ -98,6 +103,10 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	 * the drawing code. */
 	angle_current += truncf((angle_minimum - angle_current) / two_pi) * two_pi;
 	angle_current += truncf((angle_maximum - angle_current) / two_pi) * two_pi;
+
+#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+	speed = velocity_norm;
+#endif
 }
 
 
@@ -119,6 +128,9 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 {
 	float angle_x;
 	float angle_width;
+#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+	char speed_string[8];  /* 7 digits should be more than enough for speed */
+#endif
 
 	const float upper_y = (hud_height - params->height) / 2.0f + params->y;
 
@@ -148,4 +160,13 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 			upper_y + params->height / 2.0f, 2.0f, params->height / 2.0f,
 			shi_color_center_marker);
 	}
+
+#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+	if (params->speed_scale > 0) {
+		snprintf(speed_string, sizeof(speed_string), "%.0f", speed);
+		shi_drawString(
+			hud_width / 2.0f, upper_y + params->height + params->speed_y,
+			speed_string, params->speed_scale, shi_color_speed);
+	}
+#endif
 }
