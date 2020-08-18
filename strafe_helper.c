@@ -1,7 +1,5 @@
 #include "strafe_helper.h"
 #include "../strafe_helper_includes.h"
-#include <math.h>
-#include <stdbool.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -10,7 +8,15 @@
 
 static float sign(const float value)
 {
-	return copysignf(1.0f, value);
+	if (value < 0.0f)
+	{
+		return -1.0f;
+	}
+	else if (value > 0.0f)
+	{
+		return 1.0f;
+	}
+	return 0.0f;
 }
 
 static float vectorAngleSign(const float v[2], const float w[2])
@@ -73,7 +79,7 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 
 	angle_minimum = (wishspeed - v_z * w_z) / (2.0f - wishdir_norm * wishdir_norm)
 	                * wishdir_norm / velocity_norm;
-	angle_minimum = acosf(fminf(1.0f, angle_minimum));
+	angle_minimum = acosf(angle_minimum < 1.0f ? angle_minimum : 1.0f);
 	angle_minimum = angle_sign * angle_minimum - forward_velocity_angle;
 
 	angle_maximum = -0.5f * accel * frametime * wishspeed * wishdir_norm

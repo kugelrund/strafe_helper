@@ -5,12 +5,9 @@
 extern "C" {
 #endif
 
-#include <stdbool.h>
-
-
 struct StrafeHelperParams {
-    bool center;
-    bool center_marker;
+    int center;
+    int center_marker;
     float scale;
     float height;
     float y;
