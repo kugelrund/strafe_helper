@@ -11,7 +11,7 @@ struct StrafeHelperParams {
     float scale;
     float height;
     float y;
-    int speed_scale;
+    float speed_scale;
     float speed_y;
 };
 

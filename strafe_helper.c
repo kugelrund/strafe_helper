@@ -162,7 +162,7 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 	}
 
 #ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
-	if (params->speed_scale > 0) {
+	if (params->speed_scale > 0.0f) {
 		snprintf(speed_string, sizeof(speed_string), "%.0f", speed);
 		shi_drawString(
 			hud_width / 2.0f, upper_y + params->height + params->speed_y,
