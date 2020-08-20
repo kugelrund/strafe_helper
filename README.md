@@ -15,7 +15,7 @@ and add `strafe_helper.c` to your build system. Then a header file called
 `strafe_helper_includes.h` has to be created directly outside the submodule.
 It needs to declare the constants
 
-```lang=c
+```c
 /*color_type*/ shi_color_accelerating;
 /*color_type*/ shi_color_optimal;
 /*color_type*/ shi_color_center_marker;
@@ -24,7 +24,7 @@ It needs to declare the constants
 
 the functions
 
-```lang=c
+```c
 void shi_drawFilledRectangle(float x, float y, float w, float h,
                              /*color_type*/ color);
 void shi_drawString(float x, float y, const char* string, float scale,
@@ -43,7 +43,7 @@ If drawing the current speed is not wanted, the declaration of
 `shi_color_speed`, `shi_drawString` and `snprintf` can be omitted. Instead use
 the preprocessor definition
 
-```lang=c
+```c
 #define STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
 ```
 
