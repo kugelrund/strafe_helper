@@ -165,7 +165,8 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 	if (params->speed_scale > 0.0f) {
 		snprintf(speed_string, sizeof(speed_string), "%.0f", speed);
 		shi_drawString(
-			hud_width / 2.0f, upper_y + params->height + params->speed_y,
+			hud_width / 2.0f + params->speed_x,
+			upper_y + params->height + params->speed_y,
 			speed_string, params->speed_scale, shi_color_speed);
 	}
 #endif
