@@ -150,15 +150,15 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 	shi_drawFilledRectangle(
 		angleToPixel(angle_x, params->scale, hud_width), upper_y,
 		angleDiffToPixelDiff(angle_width, params->scale, hud_width),
-		params->height, shi_color_accelerating);
+		params->height, shi_getColorAccelerating());
 	shi_drawFilledRectangle(
 		angleToPixel(angle_optimal + offset, params->scale, hud_width) - 0.5f,
-		upper_y, 2.0f, params->height, shi_color_optimal);
+		upper_y, 2.0f, params->height, shi_getColorOptimal());
 	if (params->center_marker) {
 		shi_drawFilledRectangle(
 			angleToPixel(angle_current + offset, params->scale, hud_width) - 0.5f,
 			upper_y + params->height / 2.0f, 2.0f, params->height / 2.0f,
-			shi_color_center_marker);
+			shi_getColorCenterMarker());
 	}
 
 #ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
@@ -167,7 +167,7 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 		shi_drawString(
 			hud_width / 2.0f + params->speed_x,
 			upper_y + params->height + params->speed_y,
-			speed_string, params->speed_scale, shi_color_speed);
+			speed_string, params->speed_scale, shi_getColorSpeed());
 	}
 #endif
 }
