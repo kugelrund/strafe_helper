@@ -13,10 +13,10 @@ Include this repository as
 [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) in your project
 and add `strafe_helper.c` to your build system. Then a header file called
 `strafe_helper_includes.h` has to be created directly outside the submodule.
-It needs to declare the functions `acosf`, `snprintf`, `sqrtf` and `truncf` from
-the C Standard Library. If the standard library can be used, including `math.h`
-and `stdio.h` is enough. If not (for example for Quake Virtual Machine code),
-equivalent implementations have to be given manually.
+It needs to declare the functions `acosf`, `atan2f`, `snprintf`, `sqrtf` and
+`truncf` from the C Standard Library. If the standard library can be used,
+including `math.h` and `stdio.h` is enough. If not (for example for Quake
+Virtual Machine code), equivalent implementations have to be given manually.
 
 Additionally, the functions `shc_drawFilledRectangle` and `shc_drawString` have
 to be implemented as desired, but according to their declarations in

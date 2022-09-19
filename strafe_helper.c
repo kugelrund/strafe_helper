@@ -20,9 +20,9 @@ static float sign(const float value)
 	return 0.0f;
 }
 
-static float vectorAngleSign(const float v[2], const float w[2])
+static float crossProduct(const float v[2], const float w[2])
 {
-	return sign(v[0] * w[1] - v[1] * w[0]);
+	return v[0] * w[1] - v[1] * w[0];
 }
 
 static float dotProduct(const float v[2], const float w[2])
@@ -33,6 +33,16 @@ static float dotProduct(const float v[2], const float w[2])
 		dot_product += v[i] * w[i];
 	}
 	return dot_product;
+}
+
+static float angleBetweenVectors(const float v[2], const float w[2])
+{
+	return atan2f(crossProduct(v, w), dotProduct(v, w));
+}
+
+static float vectorAngleSign(const float v[2], const float w[2])
+{
+	return sign(crossProduct(v, w));
 }
 
 static float vectorNorm(const float v[2])
@@ -68,13 +78,10 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	const float v_z = velocity[2];
 	const float w_z = wishdir[2];
 
-	const float forward_norm = vectorNorm(forward);
 	const float velocity_norm = vectorNorm(velocity);
 	const float wishdir_norm = vectorNorm(wishdir);
 
-	const float forward_velocity_angle = acosf(dotProduct(forward, wishdir)
-		/ (forward_norm * wishdir_norm)) * vectorAngleSign(wishdir, forward);
-
+	const float forward_velocity_angle = angleBetweenVectors(wishdir, forward);
 	const float angle_sign = vectorAngleSign(wishdir, velocity);
 	const float two_pi = 2.0f * (float)M_PI;
 
@@ -93,9 +100,7 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	angle_maximum = acosf(angle_maximum);
 	angle_maximum = angle_sign * angle_maximum - forward_velocity_angle;
 
-	angle_current = dotProduct(velocity, forward) / (velocity_norm * forward_norm);
-	angle_current = acosf(angle_current);
-	angle_current = vectorAngleSign(forward, velocity) * angle_current;
+	angle_current = angleBetweenVectors(forward, velocity);
 
 	/* Make sure that angle_current fits well to the other angles. That is, try
 	 * equivalent angles by adding or subtracting multiples of 2 * M_PI such
