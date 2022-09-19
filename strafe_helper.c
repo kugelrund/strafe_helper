@@ -1,4 +1,5 @@
 #include "strafe_helper.h"
+#include "strafe_helper_customization.h"
 #include "../strafe_helper_includes.h"
 
 #ifndef M_PI
@@ -52,7 +53,7 @@ static float angle_optimal;
 static float angle_minimum;
 static float angle_maximum;
 
-#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+#ifndef STRAFE_HELPER_CUSTOMIZATION_DISABLE_DRAW_SPEED
 /* The current player speed in the horizontal plane */
 static float speed;
 #endif
@@ -104,7 +105,7 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	angle_current += truncf((angle_minimum - angle_current) / two_pi) * two_pi;
 	angle_current += truncf((angle_maximum - angle_current) / two_pi) * two_pi;
 
-#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+#ifndef STRAFE_HELPER_CUSTOMIZATION_DISABLE_DRAW_SPEED
 	speed = velocity_norm;
 #endif
 }
@@ -128,7 +129,7 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 {
 	float angle_x;
 	float angle_width;
-#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+#ifndef STRAFE_HELPER_CUSTOMIZATION_DISABLE_DRAW_SPEED
 	char speed_string[8];  /* 7 digits should be more than enough for speed */
 #endif
 
@@ -147,27 +148,27 @@ void StrafeHelper_Draw(const struct StrafeHelperParams *params,
 		angle_width = angle_minimum - angle_maximum;
 	}
 
-	shi_drawFilledRectangle(
+	shc_drawFilledRectangle(
 		angleToPixel(angle_x, params->scale, hud_width), upper_y,
 		angleDiffToPixelDiff(angle_width, params->scale, hud_width),
-		params->height, shi_getColorAccelerating());
-	shi_drawFilledRectangle(
+		params->height, shc_ElementId_AcceleratingAngles);
+	shc_drawFilledRectangle(
 		angleToPixel(angle_optimal + offset, params->scale, hud_width) - 0.5f,
-		upper_y, 2.0f, params->height, shi_getColorOptimal());
+		upper_y, 2.0f, params->height, shc_ElementId_OptimalAngle);
 	if (params->center_marker) {
-		shi_drawFilledRectangle(
+		shc_drawFilledRectangle(
 			angleToPixel(angle_current + offset, params->scale, hud_width) - 0.5f,
 			upper_y + params->height / 2.0f, 2.0f, params->height / 2.0f,
-			shi_getColorCenterMarker());
+			shc_ElementId_CenterMarker);
 	}
 
-#ifndef STRAFE_HELPER_INTERFACE_DISABLE_DRAW_SPEED
+#ifndef STRAFE_HELPER_CUSTOMIZATION_DISABLE_DRAW_SPEED
 	if (params->speed_scale > 0.0f) {
 		snprintf(speed_string, sizeof(speed_string), "%.0f", speed);
-		shi_drawString(
+		shc_drawString(
 			hud_width / 2.0f + params->speed_x,
 			upper_y + params->height + params->speed_y,
-			speed_string, params->speed_scale, shi_getColorSpeed());
+			speed_string, params->speed_scale, shc_ElementId_SpeedText);
 	}
 #endif
 }
