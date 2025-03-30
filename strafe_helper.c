@@ -7,6 +7,21 @@
 #endif
 
 
+static float maxFloat(const float a, const float b)
+{
+	return a > b ? a : b;
+}
+
+static float minFloat(const float a, const float b)
+{
+	return a < b ? a : b;
+}
+
+static float square(const float value)
+{
+	return value * value;
+}
+
 static float sign(const float value)
 {
 	if (value < 0.0f)
@@ -50,6 +65,49 @@ static float vectorNorm(const float v[2])
 	return sqrtf(dotProduct(v, v));
 }
 
+struct HelperValues {
+	float horizontal_norm;
+	float z;
+};
+
+struct HelperValues computeHelperValues(const float vec[3])
+{
+	struct HelperValues helper;
+	helper.horizontal_norm = vectorNorm(vec);
+	helper.z = vec[2];
+	return helper;
+}
+
+static float computeOptimalAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+	const struct HelperValues v, const struct HelperValues w,
+	const float s, const float a, const float dt
+)
+{
+	const float candidate1 = s * (1.0f - a * dt) - v.z * w.z;
+	const float candidate2 = square(w.z) / (1.0f + square(w.z)) * (s - v.z * w.z);
+	const float optimal_dot_product = maxFloat(candidate1, candidate2);
+	const float optimal_scaled_dot_product =
+		optimal_dot_product / (v.horizontal_norm * w.horizontal_norm);
+	return acosf(minFloat(1.0f, optimal_scaled_dot_product));
+}
+
+static float computeSmallestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+	const struct HelperValues v, const struct HelperValues w, const float s
+)
+{
+	return acosf(minFloat(1.0f, (s - v.z * w.z) / (v.horizontal_norm * w.horizontal_norm)));
+}
+
+static float computeLargestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+	const struct HelperValues v, const struct HelperValues w,
+	const float s, const float a, const float dt
+)
+{
+	const float candidate1 = -0.5f * s * a * dt;
+	const float candidate2 = (v.z * w.z - s) / (2.0f - square(w.horizontal_norm));
+	return acosf(maxFloat(candidate1, candidate2) * w.horizontal_norm / v.horizontal_norm);
+}
+
 
 /* The current angle between the players velocity vector and forward-looking
  * vector. */
@@ -75,30 +133,27 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
                                         const float accel,
                                         const float frametime)
 {
-	const float v_z = velocity[2];
-	const float w_z = wishdir[2];
-
-	const float velocity_norm = vectorNorm(velocity);
-	const float wishdir_norm = vectorNorm(wishdir);
+	const struct HelperValues velocity_helper = computeHelperValues(velocity);
+	const struct HelperValues wishdir_helper = computeHelperValues(wishdir);
 
 	const float forward_velocity_angle = angleBetweenVectors(wishdir, forward);
 	const float angle_sign = vectorAngleSign(wishdir, velocity);
 	const float two_pi = 2.0f * (float)M_PI;
 
-	angle_optimal = (wishspeed * (1.0f - accel * frametime) - v_z * w_z)
-	                / (velocity_norm * wishdir_norm);
-	angle_optimal = acosf(angle_optimal);
-	angle_optimal = angle_sign * angle_optimal - forward_velocity_angle;
+	const float angle_optimal_v2w = computeOptimalAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+		velocity_helper, wishdir_helper, wishspeed, accel, frametime
+	);
+	angle_optimal = angle_sign * angle_optimal_v2w - forward_velocity_angle;
 
-	angle_minimum = (wishspeed - v_z * w_z) / (2.0f - wishdir_norm * wishdir_norm)
-	                * wishdir_norm / velocity_norm;
-	angle_minimum = acosf(angle_minimum < 1.0f ? angle_minimum : 1.0f);
-	angle_minimum = angle_sign * angle_minimum - forward_velocity_angle;
+	const float angle_minimum_v2w = computeSmallestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+		velocity_helper, wishdir_helper, wishspeed
+	);
+	angle_minimum = angle_sign * angle_minimum_v2w - forward_velocity_angle;
 
-	angle_maximum = -0.5f * accel * frametime * wishspeed * wishdir_norm
-	                / velocity_norm;
-	angle_maximum = acosf(angle_maximum);
-	angle_maximum = angle_sign * angle_maximum - forward_velocity_angle;
+	const float angle_maximum_v2w = computeLargestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+		velocity_helper, wishdir_helper, wishspeed, accel, frametime
+	);
+	angle_maximum = angle_sign * angle_maximum_v2w - forward_velocity_angle;
 
 	angle_current = angleBetweenVectors(forward, velocity);
 
@@ -111,7 +166,7 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	angle_current += truncf((angle_maximum - angle_current) / two_pi) * two_pi;
 
 #ifndef STRAFE_HELPER_CUSTOMIZATION_DISABLE_DRAW_SPEED
-	speed = velocity_norm;
+	speed = velocity_helper.horizontal_norm;
 #endif
 }
 

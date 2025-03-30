@@ -34,3 +34,8 @@ preprocessor definition
 ```
 
 to disable that part of the strafe helper.
+
+## How it works
+
+In a nutshell, based on the current movement input keys the strafe helper computes looking directions that lead to horizontal acceleration and displays them.
+See [Strafe Helper Math](math.md) for details.
