@@ -109,15 +109,14 @@ static float computeLargestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
 }
 
 
-/* The current angle between the players velocity vector and forward-looking
- * vector. */
+/* The current angle between the players velocity vector and wishdir. */
 static float angle_current;
-/* The angle between the players velocity vector and forward-looking vector
- * that would have resulted in the maximum amount of acceleration for the
- * last reported acceleration values. */
+/* The angle between the players velocity vector and wishdir that would have
+ * resulted in the maximum amount of acceleration for the last reported
+ * acceleration values. */
 static float angle_optimal;
 /* The (absolute) minimum and maximum angles between the players velocity
- * vector and forward-looking vector that would give some acceleration. */
+ * vector and wishdir that would give some acceleration. */
 static float angle_minimum;
 static float angle_maximum;
 
@@ -126,8 +125,7 @@ static float angle_maximum;
 static float speed;
 #endif
 
-void StrafeHelper_SetAccelerationValues(const float forward[3],
-                                        const float velocity[3],
+void StrafeHelper_SetAccelerationValues(const float velocity[3],
                                         const float wishdir[3],
                                         const float wishspeed,
                                         const float accel,
@@ -136,26 +134,22 @@ void StrafeHelper_SetAccelerationValues(const float forward[3],
 	const struct HelperValues velocity_helper = computeHelperValues(velocity);
 	const struct HelperValues wishdir_helper = computeHelperValues(wishdir);
 
-	const float forward_velocity_angle = angleBetweenVectors(wishdir, forward);
 	const float angle_sign = vectorAngleSign(wishdir, velocity);
 	const float two_pi = 2.0f * (float)M_PI;
 
-	const float angle_optimal_v2w = computeOptimalAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+	angle_optimal = angle_sign * computeOptimalAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
 		velocity_helper, wishdir_helper, wishspeed, accel, frametime
 	);
-	angle_optimal = angle_sign * angle_optimal_v2w - forward_velocity_angle;
 
-	const float angle_minimum_v2w = computeSmallestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+	angle_minimum = angle_sign * computeSmallestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
 		velocity_helper, wishdir_helper, wishspeed
 	);
-	angle_minimum = angle_sign * angle_minimum_v2w - forward_velocity_angle;
 
-	const float angle_maximum_v2w = computeLargestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
+	angle_maximum = angle_sign * computeLargestAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
 		velocity_helper, wishdir_helper, wishspeed, accel, frametime
 	);
-	angle_maximum = angle_sign * angle_maximum_v2w - forward_velocity_angle;
 
-	angle_current = angleBetweenVectors(forward, velocity);
+	angle_current = angleBetweenVectors(wishdir, velocity);
 
 	/* Make sure that angle_current fits well to the other angles. That is, try
 	 * equivalent angles by adding or subtracting multiples of 2 * M_PI such

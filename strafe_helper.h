@@ -16,8 +16,7 @@ struct StrafeHelperParams {
     float speed_y;
 };
 
-void StrafeHelper_SetAccelerationValues(const float forward[3],
-                                        const float velocity[3],
+void StrafeHelper_SetAccelerationValues(const float velocity[3],
                                         const float wishdir[3],
                                         const float wishspeed,
                                         const float accel,
