@@ -64,7 +64,7 @@ And the most useful form to express this looking direction turns out to be $`\th
 ### Increasing Horizontal Speed
 
 To find player inputs that lead to an increase in horizontal speed, we need to find $`s`$ and $`w`$ such that $`\|Hv^+(s,w)\| > \|Hv\|`$.
-By definition we have $`v^+(s,w) = v$ for all $s - v^\mathsf{T}w \leq 0`$, so a mandatory condition is
+By definition we have $`v^+(s,w) = v`$ for all $`s - v^\mathsf{T}w \leq 0`$, so a mandatory condition is
 
 ```math
 \begin{align*}
