@@ -135,7 +135,6 @@ void StrafeHelper_SetAccelerationValues(const float velocity[3],
 	const struct HelperValues wishdir_helper = computeHelperValues(wishdir);
 
 	const float angle_sign = vectorAngleSign(wishdir, velocity);
-	const float two_pi = 2.0f * (float)M_PI;
 
 	angle_optimal = angle_sign * computeOptimalAcceleratingHorizontalAngleBetweenVelocityAndWishdir(
 		velocity_helper, wishdir_helper, wishspeed, accel, frametime
@@ -150,14 +149,6 @@ void StrafeHelper_SetAccelerationValues(const float velocity[3],
 	);
 
 	angle_current = angleBetweenVectors(wishdir, velocity);
-
-	/* Make sure that angle_current fits well to the other angles. That is, try
-	 * equivalent angles by adding or subtracting multiples of 2 * M_PI such
-	 * that the angle values are closest to each other. That way we avoid
-	 * differences greater than 2 * M_PI between the angles, which would break
-	 * the drawing code. */
-	angle_current += truncf((angle_minimum - angle_current) / two_pi) * two_pi;
-	angle_current += truncf((angle_maximum - angle_current) / two_pi) * two_pi;
 
 #ifndef STRAFE_HELPER_CUSTOMIZATION_DISABLE_DRAW_SPEED
 	speed = velocity_helper.horizontal_norm;
